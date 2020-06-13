@@ -123,43 +123,41 @@ TEST_CASE( "max item length", "[pocket][max_item_length]" )
         }
     }
 
-    // Default max_item_length assumes pocket is a cube, limiting max length to the diagonal
-    // dimension of one side of the cube (the opening into the box, so to speak).
+    // Default max_item_length assumes pocket is a cylinder with a ratio of
+    // diameter/height of 3/4. Then the limiting length of a very thin item
+    // would be the diagonal of the rectangle formed by d and h.
     //
-    // For a 1-liter volume, a 10 cm cube encloses it, so the longest diagonal is:
+    // Equations (WolframAlpha compatible):
     //
-    //      10 cm * sqrt(2) =~ 14.14 cm
+    // solve V=pi*d^2/4*h,d=3/4*h,l^2=h^2+d^2 for l
     //
-    // This test ensures that a 1-liter box with unspecified max_item_length can indeed contain
-    // items up to 14 cm in length, but not ones that are 15 cm.
+    // For a 1-liger volume, this is a cylinder with
+    // approx. d=9.85 cm and h=13.13 cm.  Then the slender diagonal would be 16.4 cm in length
     //
-    // NOTE: In theory, the interior space of the cube can accommodate a longer item between its
-    // opposite diagonals, assuming it is infinitely thin:
-    //
-    //      10 cm * sqrt(3) =~ 17.32 cm
-    //
-    // Items of such length are not currently allowed in a 1-liter pocket.
+    // This test ensures that a 1-liter container with unspecifier
+    // max_item_length can indeed contain items that are 16 cm, but not ones that are 17 cm.
+
 
     GIVEN( "a 1-liter box without a defined max_item_length" ) {
         item box( "test_box" );
         REQUIRE( box.get_total_capacity() == 1_liter );
 
-        THEN( "it can hold an item 14 cm in length" ) {
-            item rod_14( "test_rod_14cm" );
-            REQUIRE( rod_14.length() == 14_cm );
+        THEN( "it can hold an item 16 cm in length" ) {
+            item rod_16( "test_rod_16cm" );
+            REQUIRE( rod_16.length() == 16_cm );
 
             REQUIRE( box.is_container_empty() );
-            box.put_in( rod_14, item_pocket::pocket_type::CONTAINER );
+            box.put_in( rod_16, item_pocket::pocket_type::CONTAINER );
             // Item went into the box
             CHECK_FALSE( box.is_container_empty() );
         }
 
-        THEN( "it cannot hold an item 15 cm in length" ) {
-            item rod_15( "test_rod_15cm" );
-            REQUIRE( rod_15.length() == 15_cm );
+        THEN( "it cannot hold an item 17 cm in length" ) {
+            item rod_17( "test_rod_17cm" );
+            REQUIRE( rod_17.length() == 17_cm );
 
             REQUIRE( box.is_container_empty() );
-            box.put_in( rod_15, item_pocket::pocket_type::CONTAINER );
+            box.put_in( rod_17, item_pocket::pocket_type::CONTAINER );
             // Box should still be empty
             CHECK( box.is_container_empty() );
         }

@@ -538,14 +538,14 @@ inline constexpr value_type to_kilometer( const quantity<value_type, length_in_m
     return to_millimeter( v ) / 1'000'000.0;
 }
 
-// converts a volume as if it were a cube to the length of one side
+// converts a volume as if it were a d/h=3/4 cylinder to the height
 template<typename value_type>
 inline constexpr quantity<value_type, length_in_millimeter_tag> default_length_from_volume(
     const quantity<value_type, volume_in_milliliter_tag> &v )
 {
     return units::from_centimeter<int>(
                std::round(
-                   std::cbrt( units::to_milliliter( v ) ) ) );
+                   1.313 * std::cbrt( units::to_milliliter( v ) ) ) );
 }
 
 // Streaming operators for debugging and tests
